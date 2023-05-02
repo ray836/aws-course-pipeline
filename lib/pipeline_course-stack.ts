@@ -15,7 +15,8 @@ export class PipelineCourseStack extends cdk.Stack {
       crossAccountKeys: false
     });
 
-    const sourceOutput = new Artifact('SourceOutput');
+    const cdkSourceOutput = new Artifact('CDKSourceOutput');
+    const vendashSourceOutput = new Artifact('VendashSourceOutput');
 
     pipeline.addStage({
       stageName: 'Source',
@@ -26,7 +27,15 @@ export class PipelineCourseStack extends cdk.Stack {
           branch: 'main',
           actionName: 'Pipeline_Source',
           oauthToken: SecretValue.secretsManager('github-token'),
-          output: sourceOutput
+          output: cdkSourceOutput
+        }),
+        new GitHubSourceAction({
+          owner: 'ray836',
+          repo: 'Vendash-Backend',
+          branch: 'main',
+          actionName: 'Vendash_Source',
+          oauthToken: SecretValue.secretsManager('github-token'),
+          output: vendashSourceOutput
         })
       ]
     });
@@ -38,7 +47,7 @@ export class PipelineCourseStack extends cdk.Stack {
       actions: [
         new CodeBuildAction({
           actionName: "CDK_BUILD",
-          input: sourceOutput,
+          input: cdkSourceOutput,
           outputs: [cdkBuildOutput],
           project: new PipelineProject(this, 'CdkBuildProject', {
             environment: {
