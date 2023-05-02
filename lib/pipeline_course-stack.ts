@@ -88,14 +88,6 @@ export class PipelineCourseStack extends cdk.Stack {
         })
       ]
     });
-
-
-    // The code that defines your stack goes here
-
-    // example resource
-    // const queue = new sqs.Queue(this, 'PipelineCourseQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
   }
 
   public addServiceStage(serviceStack: ServiceStack, stageName: string) {
