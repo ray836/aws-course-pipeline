@@ -2,7 +2,7 @@ import * as cdk from 'aws-cdk-lib';
 import { SecretValue } from 'aws-cdk-lib';
 import { BuildSpec, LinuxBuildImage, PipelineProject } from 'aws-cdk-lib/aws-codebuild';
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
-import { CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
+import { CloudFormationCreateUpdateStackAction, CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Construct } from 'constructs';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
@@ -21,7 +21,7 @@ export class PipelineCourseStack extends cdk.Stack {
       stageName: 'Source',
       actions: [
         new GitHubSourceAction({
-          owner: 'ray8936',
+          owner: 'ray836',
           repo: 'aws-course-pipeline',
           branch: 'main',
           actionName: 'Pipeline_Source',
@@ -46,6 +46,18 @@ export class PipelineCourseStack extends cdk.Stack {
             },
             buildSpec: BuildSpec.fromSourceFilename('build-specs/cdk-build-spec.yml')
           })
+        })
+      ]
+    });
+
+    pipeline.addStage({
+      stageName: "Pipeline_Update",
+      actions: [
+        new CloudFormationCreateUpdateStackAction({
+          actionName: "Pipeline_Update",
+          stackName: "PipelineCourseStack",
+          templatePath: cdkBuildOutput.atPath("PipelineStack.template.json"),
+          adminPermissions: true
         })
       ]
     })
