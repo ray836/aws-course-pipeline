@@ -108,5 +108,4 @@ export class PipelineCourseStack extends cdk.Stack {
     })
   }
 
-
 }
