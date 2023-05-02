@@ -4,21 +4,27 @@ import { BuildSpec, LinuxBuildImage, PipelineProject } from 'aws-cdk-lib/aws-cod
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { CloudFormationCreateUpdateStackAction, CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Construct } from 'constructs';
+import { ServiceStack } from '../test/constructs/service-stack';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class PipelineCourseStack extends cdk.Stack {
+  private readonly pipeline: Pipeline;
+  private readonly cdkBuildOutput: Artifact;
+  private readonly serviceBuildOutput: Artifact;
+
+
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const pipeline = new Pipeline(this, 'Pipeline', {
+    this.pipeline = new Pipeline(this, 'Pipeline', {
       pipelineName: 'Pipeline-From-Course',
       crossAccountKeys: false
     });
 
     const cdkSourceOutput = new Artifact('CDKSourceOutput');
-    const vendashSourceOutput = new Artifact('VendashSourceOutput');
+    const serviceSourceOutput = new Artifact('ServiceSourceOutput');
 
-    pipeline.addStage({
+    this.pipeline.addStage({
       stageName: 'Source',
       actions: [
         new GitHubSourceAction({
@@ -35,21 +41,33 @@ export class PipelineCourseStack extends cdk.Stack {
           branch: 'main',
           actionName: 'Vendash_Source',
           oauthToken: SecretValue.secretsManager('github-token'),
-          output: vendashSourceOutput
+          output: serviceSourceOutput
         })
       ]
     });
 
-    const cdkBuildOutput = new Artifact('CdkBuildOutput');
+    this.cdkBuildOutput = new Artifact('CdkBuildOutput');
+    this.serviceBuildOutput = new Artifact('ServiceBuildOutput');
 
-    pipeline.addStage({
+    this.pipeline.addStage({
       stageName: "Build",
       actions: [
         new CodeBuildAction({
           actionName: "CDK_BUILD",
           input: cdkSourceOutput,
-          outputs: [cdkBuildOutput],
+          outputs: [this.cdkBuildOutput],
           project: new PipelineProject(this, 'CdkBuildProject', {
+            environment: {
+              buildImage: LinuxBuildImage.STANDARD_5_0
+            },
+            buildSpec: BuildSpec.fromSourceFilename('build-specs/cdk-build-spec.yml')
+          })
+        }),
+        new CodeBuildAction({
+          actionName: "Service_Build",
+          input: serviceSourceOutput,
+          outputs: [this.serviceBuildOutput],
+          project: new PipelineProject(this, 'ServiceBuildProject', {
             environment: {
               buildImage: LinuxBuildImage.STANDARD_5_0
             },
@@ -59,17 +77,18 @@ export class PipelineCourseStack extends cdk.Stack {
       ]
     });
 
-    pipeline.addStage({
+    this.pipeline.addStage({
       stageName: "Pipeline_Update",
       actions: [
         new CloudFormationCreateUpdateStackAction({
           actionName: "Pipeline_Update",
           stackName: "PipelineCourseStack",
-          templatePath: cdkBuildOutput.atPath("PipelineCourseStack.template.json"),
+          templatePath: this.cdkBuildOutput.atPath("PipelineCourseStack.template.json"),
           adminPermissions: true
         })
       ]
-    })
+    });
+
 
     // The code that defines your stack goes here
 
@@ -78,4 +97,24 @@ export class PipelineCourseStack extends cdk.Stack {
     //   visibilityTimeout: cdk.Duration.seconds(300)
     // });
   }
+
+  public addServiceStage(serviceStack: ServiceStack, stageName: string) {
+    this.pipeline.addStage({
+      stageName: stageName,
+      actions: [
+        new CloudFormationCreateUpdateStackAction({
+          actionName: "Service_Update",
+          stackName: serviceStack.stackName,
+          templatePath: this.cdkBuildOutput.atPath(`${serviceStack.stackName}.template.json`),
+          adminPermissions: true,
+          parameterOverrides: {
+            ...serviceStack.serviceCode.assign(this.serviceBuildOutput.s3Location)
+          },
+          extraInputs: [this.serviceBuildOutput]
+        })
+      ]
+    })
+  }
+
+
 }
