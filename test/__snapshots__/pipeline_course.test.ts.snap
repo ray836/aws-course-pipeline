@@ -433,7 +433,7 @@ exports[`Pipeline Stack 1`] = `
                     ],
                   },
                   "StackName": "PipelineCourseStack",
-                  "TemplatePath": "CdkBuildOutput::PipelineStack.template.json",
+                  "TemplatePath": "CdkBuildOutput::PipelineCourseStack.template.json",
                 },
                 "InputArtifacts": [
                   {
