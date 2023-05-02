@@ -20,5 +20,5 @@ reports:
   jest_reports:
     files:
       - 'test-report.xml'
-      file-format: JUNITXML
-      base-directory: 'test-reports'
+    file-format: JUNITXML
+    base-directory: 'test-reports'
