@@ -18,7 +18,8 @@ export class PipelineCourseStack extends cdk.Stack {
 
     this.pipeline = new Pipeline(this, 'Pipeline', {
       pipelineName: 'Pipeline-From-Course',
-      crossAccountKeys: false
+      crossAccountKeys: false,
+      restartExecutionOnUpdate: true
     });
 
     const cdkSourceOutput = new Artifact('CDKSourceOutput');
