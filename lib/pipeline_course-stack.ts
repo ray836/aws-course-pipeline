@@ -61,7 +61,7 @@ export class PipelineCourseStack extends cdk.Stack {
             environment: {
               buildImage: LinuxBuildImage.STANDARD_5_0
             },
-            buildSpec: BuildSpec.fromSourceFilename('build-specs/cdk-build-spec.yml')
+            buildSpec: BuildSpec.fromSourceFilename('build-specs/service-build-spec.yml')
           })
         }),
         new CodeBuildAction({
