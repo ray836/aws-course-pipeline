@@ -406,6 +406,7 @@ exports[`Pipeline Stack 1`] = `
           "Type": "S3",
         },
         "Name": "Pipeline-From-Course",
+        "RestartExecutionOnUpdate": true,
         "RoleArn": {
           "Fn::GetAtt": [
             "PipelineRoleD68726F7",
@@ -924,7 +925,7 @@ exports[`Pipeline Stack 1`] = `
           ],
         },
         "Source": {
-          "BuildSpec": "build-specs/cdk-build-spec.yml",
+          "BuildSpec": "build-specs/service-build-spec.yml",
           "Type": "CODEPIPELINE",
         },
       },
