@@ -33,7 +33,7 @@ exports[`Pipeline Stack 1`] = `
           ],
         },
         "Source": {
-          "BuildSpec": "build-specs/cdk-build-spec.yml",
+          "BuildSpec": "build-specs/service-build-spec.yml",
           "Type": "CODEPIPELINE",
         },
       },
@@ -331,7 +331,7 @@ exports[`Pipeline Stack 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
-    "PipelineBuildServiceBuildCodePipelineActionRole584B0FA3": {
+    "PipelineBuildServiceBUILDCodePipelineActionRoleAEA55B7A": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -363,7 +363,7 @@ exports[`Pipeline Stack 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "PipelineBuildServiceBuildCodePipelineActionRoleDefaultPolicyE6A14559": {
+    "PipelineBuildServiceBUILDCodePipelineActionRoleDefaultPolicyD21F1345": {
       "Properties": {
         "PolicyDocument": {
           "Statement": [
@@ -384,10 +384,10 @@ exports[`Pipeline Stack 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "PipelineBuildServiceBuildCodePipelineActionRoleDefaultPolicyE6A14559",
+        "PolicyName": "PipelineBuildServiceBUILDCodePipelineActionRoleDefaultPolicyD21F1345",
         "Roles": [
           {
-            "Ref": "PipelineBuildServiceBuildCodePipelineActionRole584B0FA3",
+            "Ref": "PipelineBuildServiceBUILDCodePipelineActionRoleAEA55B7A",
           },
         ],
       },
@@ -513,7 +513,7 @@ exports[`Pipeline Stack 1`] = `
                     "Name": "ServiceSourceOutput",
                   },
                 ],
-                "Name": "Service_Build",
+                "Name": "Service_BUILD",
                 "OutputArtifacts": [
                   {
                     "Name": "ServiceBuildOutput",
@@ -521,7 +521,7 @@ exports[`Pipeline Stack 1`] = `
                 ],
                 "RoleArn": {
                   "Fn::GetAtt": [
-                    "PipelineBuildServiceBuildCodePipelineActionRole584B0FA3",
+                    "PipelineBuildServiceBUILDCodePipelineActionRoleAEA55B7A",
                     "Arn",
                   ],
                 },
@@ -833,7 +833,7 @@ exports[`Pipeline Stack 1`] = `
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "PipelineBuildServiceBuildCodePipelineActionRole584B0FA3",
+                  "PipelineBuildServiceBUILDCodePipelineActionRoleAEA55B7A",
                   "Arn",
                 ],
               },
