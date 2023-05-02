@@ -65,7 +65,7 @@ export class PipelineCourseStack extends cdk.Stack {
           })
         }),
         new CodeBuildAction({
-          actionName: "Service_Build",
+          actionName: "Service_BUILD",
           input: serviceSourceOutput,
           outputs: [this.serviceBuildOutput],
           project: new PipelineProject(this, 'ServiceBuildProject', {
