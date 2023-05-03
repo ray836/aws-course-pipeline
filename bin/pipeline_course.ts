@@ -10,7 +10,7 @@ const pipelineStack = new PipelineCourseStack(app, 'PipelineCourseStack', {
 
 });
 
-new BillingStack(app, 'BillingStack', {
+const billingStack = new BillingStack(app, 'BillingStack', {
   budgetAmount: 4,
   emailAddress: 'raygrant36@gmail.com'
 })

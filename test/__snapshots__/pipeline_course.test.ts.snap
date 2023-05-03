@@ -33,7 +33,7 @@ exports[`Pipeline Stack 1`] = `
           ],
         },
         "Source": {
-          "BuildSpec": "build-specs/service-build-spec.yml",
+          "BuildSpec": "build-specs/cdk-build-spec.yml",
           "Type": "CODEPIPELINE",
         },
       },
@@ -331,7 +331,7 @@ exports[`Pipeline Stack 1`] = `
       },
       "Type": "AWS::IAM::Policy",
     },
-    "PipelineBuildServiceBUILDCodePipelineActionRoleAEA55B7A": {
+    "PipelineBuildServiceBuildCodePipelineActionRole584B0FA3": {
       "Properties": {
         "AssumeRolePolicyDocument": {
           "Statement": [
@@ -363,7 +363,7 @@ exports[`Pipeline Stack 1`] = `
       },
       "Type": "AWS::IAM::Role",
     },
-    "PipelineBuildServiceBUILDCodePipelineActionRoleDefaultPolicyD21F1345": {
+    "PipelineBuildServiceBuildCodePipelineActionRoleDefaultPolicyE6A14559": {
       "Properties": {
         "PolicyDocument": {
           "Statement": [
@@ -384,10 +384,10 @@ exports[`Pipeline Stack 1`] = `
           ],
           "Version": "2012-10-17",
         },
-        "PolicyName": "PipelineBuildServiceBUILDCodePipelineActionRoleDefaultPolicyD21F1345",
+        "PolicyName": "PipelineBuildServiceBuildCodePipelineActionRoleDefaultPolicyE6A14559",
         "Roles": [
           {
-            "Ref": "PipelineBuildServiceBUILDCodePipelineActionRoleAEA55B7A",
+            "Ref": "PipelineBuildServiceBuildCodePipelineActionRole584B0FA3",
           },
         ],
       },
@@ -452,7 +452,7 @@ exports[`Pipeline Stack 1`] = `
                   "PollForSourceChanges": false,
                   "Repo": "Vendash-Backend",
                 },
-                "Name": "Vendash_Source",
+                "Name": "Service_Source",
                 "OutputArtifacts": [
                   {
                     "Name": "ServiceSourceOutput",
@@ -513,7 +513,7 @@ exports[`Pipeline Stack 1`] = `
                     "Name": "ServiceSourceOutput",
                   },
                 ],
-                "Name": "Service_BUILD",
+                "Name": "Service_Build",
                 "OutputArtifacts": [
                   {
                     "Name": "ServiceBuildOutput",
@@ -521,7 +521,7 @@ exports[`Pipeline Stack 1`] = `
                 ],
                 "RoleArn": {
                   "Fn::GetAtt": [
-                    "PipelineBuildServiceBUILDCodePipelineActionRoleAEA55B7A",
+                    "PipelineBuildServiceBuildCodePipelineActionRole584B0FA3",
                     "Arn",
                   ],
                 },
@@ -833,7 +833,7 @@ exports[`Pipeline Stack 1`] = `
               "Effect": "Allow",
               "Resource": {
                 "Fn::GetAtt": [
-                  "PipelineBuildServiceBUILDCodePipelineActionRoleAEA55B7A",
+                  "PipelineBuildServiceBuildCodePipelineActionRole584B0FA3",
                   "Arn",
                 ],
               },
@@ -881,7 +881,7 @@ exports[`Pipeline Stack 1`] = `
       },
       "Type": "AWS::CodePipeline::Webhook",
     },
-    "PipelineSourceVendashSourceWebhookResourceE5940140": {
+    "PipelineSourceServiceSourceWebhookResourceF8F7A072": {
       "Properties": {
         "Authentication": "GITHUB_HMAC",
         "AuthenticationConfiguration": {
@@ -894,7 +894,7 @@ exports[`Pipeline Stack 1`] = `
           },
         ],
         "RegisterWithThirdParty": true,
-        "TargetAction": "Vendash_Source",
+        "TargetAction": "Service_Source",
         "TargetPipeline": {
           "Ref": "PipelineC660917D",
         },
