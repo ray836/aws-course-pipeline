@@ -11,6 +11,7 @@ export class PipelineCourseStack extends cdk.Stack {
   private readonly pipeline: Pipeline;
   private readonly cdkBuildOutput: Artifact;
   private readonly serviceBuildOutput: Artifact;
+  private readonly serviceSourceOutput: Artifact;
 
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
@@ -23,7 +24,7 @@ export class PipelineCourseStack extends cdk.Stack {
     });
 
     const cdkSourceOutput = new Artifact('CDKSourceOutput');
-    const serviceSourceOutput = new Artifact('ServiceSourceOutput');
+    this.serviceSourceOutput = new Artifact('ServiceSourceOutput');
 
     this.pipeline.addStage({
       stageName: 'Source',
@@ -65,16 +66,18 @@ export class PipelineCourseStack extends cdk.Stack {
           })
         }),
         new CodeBuildAction({
-          actionName: "Service_BUILD",
-          input: serviceSourceOutput,
+          actionName: "Service_Build",
+          input: this.serviceSourceOutput,
           outputs: [this.serviceBuildOutput],
-          project: new PipelineProject(this, 'ServiceBuildProject', {
+          project: new PipelineProject(this, "ServiceBuildProject", {
             environment: {
-              buildImage: LinuxBuildImage.STANDARD_5_0
+              buildImage: LinuxBuildImage.STANDARD_5_0,
             },
-            buildSpec: BuildSpec.fromSourceFilename('build-specs/service-build-spec.yml')
-          })
-        })
+            buildSpec: BuildSpec.fromSourceFilename(
+              "build-specs/service-build-spec.yml"
+            ),
+          }),
+        }),
       ]
     });
 
