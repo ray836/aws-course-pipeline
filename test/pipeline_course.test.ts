@@ -20,7 +20,9 @@ test('Pipeline Stack', () => {
 test("Adding service stage", () => {
 	// Given
 	const app = new cdk.App();
-	const serviceStack = new ServiceStack(app, "ServiceStack");
+	const serviceStack = new ServiceStack(app, "ServiceStack", {
+		stageName: "Test"
+	});
 	const pipelineStack = new PipelineCourseStack(app, "PipelineStack");
 
 	// When
@@ -36,7 +38,9 @@ test("Adding service stage", () => {
 test('Adding billing stack to stage', () => {
 	// GIVEN
 	const app = new cdk.App();
-	const serviceStack = new ServiceStack(app, "ServiceStack");
+	const serviceStack = new ServiceStack(app, "ServiceStack", {
+		stageName: "Test"
+	});
 	const pipelineStack = new PipelineCourseStack(app, "PipelineStack");
 	const billingStack = new BillingStack(app, "BillingStack", {
 		budgetAmount: 5,
