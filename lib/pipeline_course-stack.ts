@@ -41,7 +41,7 @@ export class PipelineCourseStack extends cdk.Stack {
           owner: 'ray836',
           repo: 'Vendash-Backend',
           branch: 'main',
-          actionName: 'Vendash_Source',
+          actionName: 'Service_Source',
           oauthToken: SecretValue.secretsManager('github-token'),
           output: this.serviceSourceOutput
         })
