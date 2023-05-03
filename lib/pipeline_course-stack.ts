@@ -43,7 +43,7 @@ export class PipelineCourseStack extends cdk.Stack {
           branch: 'main',
           actionName: 'Vendash_Source',
           oauthToken: SecretValue.secretsManager('github-token'),
-          output: serviceSourceOutput
+          output: this.serviceSourceOutput
         })
       ]
     });
