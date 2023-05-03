@@ -1,8 +1,8 @@
 import * as cdk from 'aws-cdk-lib';
 import { SecretValue } from 'aws-cdk-lib';
-import { BuildSpec, LinuxBuildImage, PipelineProject } from 'aws-cdk-lib/aws-codebuild';
+import { BuildEnvironmentVariableType, BuildSpec, LinuxBuildImage, PipelineProject } from 'aws-cdk-lib/aws-codebuild';
 import { Artifact, IStage, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
-import { CloudFormationCreateUpdateStackAction, CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
+import { CloudFormationCreateUpdateStackAction, CodeBuildAction, CodeBuildActionType, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Construct } from 'constructs';
 import { BillingStack } from './billing-stack';
 import { ServiceStack } from './constructs/service-stack';
@@ -119,6 +119,27 @@ export class PipelineCourseStack extends cdk.Stack {
       stackName: billingStack.stackName,
       templatePath: this.cdkBuildOutput.atPath(`${billingStack.stackName}.template.json`),
       adminPermissions: true
+    }))
+  }
+
+  public addServiceIntegrationTestToStage(stage: IStage, serviceEndpoint: string) {
+    stage.addAction(new CodeBuildAction({
+      actionName: 'Integration_Tests',
+      input: this.serviceSourceOutput,
+      project: new PipelineProject(this, 'ServiceIntegrationTestsProject', {
+        environment: {
+          buildImage: LinuxBuildImage.STANDARD_5_0
+        },
+        buildSpec: BuildSpec.fromSourceFilename("build-specs/integ-test-build-spec.yml")
+      }),
+      environmentVariables: {
+        SERVICE_ENDPOINT: {
+          value: serviceEndpoint,
+          type: BuildEnvironmentVariableType.PLAINTEXT
+        }
+      },
+      type: CodeBuildActionType.TEST,
+      runOrder: 2
     }))
   }
 

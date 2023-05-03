@@ -25,3 +25,6 @@ const serviceStackProd = new ServiceStack(app, "ServiceStackProd", {
 const testStage = pipelineStack.addServiceStage(serviceStackTest, "Test");
 const prodStage = pipelineStack.addServiceStage(serviceStackProd, "Prod");
 pipelineStack.addBillingStackToStage(billingStack, prodStage);
+// There is already a VenApiEndpoint being outputted for the test stack.
+// TODO: Find out how to use that.
+pipelineStack.addServiceIntegrationTestToStage(testStage, serviceStackTest.serviceEndpointOutput.importValue);
