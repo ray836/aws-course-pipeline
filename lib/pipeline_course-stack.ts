@@ -4,7 +4,7 @@ import { BuildSpec, LinuxBuildImage, PipelineProject } from 'aws-cdk-lib/aws-cod
 import { Artifact, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { CloudFormationCreateUpdateStackAction, CodeBuildAction, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
 import { Construct } from 'constructs';
-import { ServiceStack } from '../test/constructs/service-stack';
+import { ServiceStack } from './constructs/service-stack';
 // import * as sqs from 'aws-cdk-lib/aws-sqs';
 
 export class PipelineCourseStack extends cdk.Stack {
