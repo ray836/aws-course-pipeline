@@ -3,6 +3,10 @@ import { SecretValue } from 'aws-cdk-lib';
 import { BuildEnvironmentVariableType, BuildSpec, LinuxBuildImage, PipelineProject } from 'aws-cdk-lib/aws-codebuild';
 import { Artifact, IStage, Pipeline } from 'aws-cdk-lib/aws-codepipeline';
 import { CloudFormationCreateUpdateStackAction, CodeBuildAction, CodeBuildActionType, GitHubSourceAction } from 'aws-cdk-lib/aws-codepipeline-actions';
+import { EventField, RuleTargetInput } from 'aws-cdk-lib/aws-events';
+import { SnsTopic } from 'aws-cdk-lib/aws-events-targets';
+import { Topic } from 'aws-cdk-lib/aws-sns';
+import { EmailSubscription } from 'aws-cdk-lib/aws-sns-subscriptions';
 import { Construct } from 'constructs';
 import { BillingStack } from './billing-stack';
 import { ServiceStack } from './constructs/service-stack';
@@ -13,10 +17,17 @@ export class PipelineCourseStack extends cdk.Stack {
   private readonly cdkBuildOutput: Artifact;
   private readonly serviceBuildOutput: Artifact;
   private readonly serviceSourceOutput: Artifact;
+  private readonly pipelineNotificationsTopic: Topic;
 
 
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    this.pipelineNotificationsTopic = new Topic(this, 'PipelineNotificationTopic', {
+      topicName: 'PipelineNotifications'
+    });
+
+    this.pipelineNotificationsTopic.addSubscription(new EmailSubscription('raygrant36@gmail.com'))
 
     this.pipeline = new Pipeline(this, 'Pipeline', {
       pipelineName: 'Pipeline-From-Course',
@@ -123,7 +134,7 @@ export class PipelineCourseStack extends cdk.Stack {
   }
 
   public addServiceIntegrationTestToStage(stage: IStage, serviceEndpoint: string) {
-    stage.addAction(new CodeBuildAction({
+  const integTestAction = new CodeBuildAction({
       actionName: 'Integration_Tests',
       input: this.serviceSourceOutput,
       project: new PipelineProject(this, 'ServiceIntegrationTestsProject', {
@@ -140,7 +151,22 @@ export class PipelineCourseStack extends cdk.Stack {
       },
       type: CodeBuildActionType.TEST,
       runOrder: 2
-    }))
+    })
+
+    stage.addAction(integTestAction);
+    integTestAction.onStateChange("IntegrationTestFoiled", new SnsTopic(this.pipelineNotificationsTopic, {
+      message: RuleTargetInput.fromText(`Integration Test Failed, See details here: ${EventField.fromPath('$.detail.execution-result.external-execution-url')}`)
+    }),
+    {
+      ruleName: 'IntegrationTestFailed',
+      eventPattern: {
+        detail: {
+          state: ["FAILED"]
+        }
+      },
+      description: "Integration test has failed"
+    }
+    );
   }
 
 }
