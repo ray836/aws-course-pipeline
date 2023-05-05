@@ -39,7 +39,7 @@ export class ServiceStack extends Stack {
 		if (props.stageName === 'Prod') {
 			new LambdaDeploymentGroup(this, "DeploymentGroup", {
 				alias: alias,
-				deploymentConfig: LambdaDeploymentConfig.CANARY_10PERCENT_5MINUTES
+				deploymentConfig: LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES
 			})
 		}
 
