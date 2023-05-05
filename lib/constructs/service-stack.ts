@@ -1,5 +1,6 @@
-import { CfnOutput, Stack, StackProps } from "aws-cdk-lib";
+import { CfnOutput, Duration, Stack, StackProps } from "aws-cdk-lib";
 import { LambdaRestApi } from "aws-cdk-lib/aws-apigateway";
+import { Statistic, TreatMissingData } from "aws-cdk-lib/aws-cloudwatch";
 import { LambdaDeploymentConfig, LambdaDeploymentGroup } from "aws-cdk-lib/aws-codedeploy";
 import { ApiGateway } from "aws-cdk-lib/aws-events-targets";
 import { Alias, CfnParametersCode, Code, Function, Runtime } from "aws-cdk-lib/aws-lambda";
@@ -39,7 +40,17 @@ export class ServiceStack extends Stack {
 		if (props.stageName === 'Prod') {
 			new LambdaDeploymentGroup(this, "DeploymentGroup", {
 				alias: alias,
-				deploymentConfig: LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES
+				deploymentConfig: LambdaDeploymentConfig.CANARY_10PERCENT_10MINUTES,
+				autoRollback: {
+					deploymentInAlarm: true
+				},
+				alarms: [api.metricServerError().with({period: Duration.minutes(1), statistic: Statistic.SUM}).createAlarm(this, 'ServiceErrorAlarm', {
+					threshold: 1,
+					alarmDescription: "Service is experiencing errors",
+					alarmName: `ServiceErrorAlarms${props.stageName}`,
+					evaluationPeriods: 1,
+					treatMissingData: TreatMissingData.NOT_BREACHING
+				})]
 			})
 		}
 
